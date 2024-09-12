@@ -43,7 +43,10 @@ jobs:
           echo "	dh \$@" >> debian/rules
           chmod +x debian/rules
 
-          dch --create --package main --newversion 1.0-1
+          # Set environment variables to avoid interaction issues with dch
+          export DEBEMAIL="alam.shariful@hotmail.com"
+          export DEBFULLNAME="Shariful Alam"
+          dch --create --package main --newversion 1.0-1 --no-editor
 
       - name: Build Debian package
         run: |
@@ -64,19 +67,5 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download Debian package
-        uses: actions/download-artifact@v3
-        with:
-          name: debian-package
-
-      - name: Install the package in Docker container
-        run: |
-          apt-get update
-          apt-get install -y ./main_1.0-1_amd64.deb
-
-      - name: Run installed program
-        run: |
-          main
+        uses: actions
 
