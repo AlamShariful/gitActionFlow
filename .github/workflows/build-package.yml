@@ -27,12 +27,16 @@ jobs:
           cd gitActionFlow/src
           # Create debian packaging files
           echo "9" > debian/compat
+          
+          # Updated debian/control file
           echo "Source: main" > debian/control
           echo "Section: misc" >> debian/control
           echo "Priority: optional" >> debian/control
           echo "Maintainer: Shariful Alam <alam.shariful@hotmail.com>" >> debian/control
           echo "Build-Depends: debhelper (>= 9)" >> debian/control
           echo "Standards-Version: 4.1.0" >> debian/control
+          
+          # Binary package definition
           echo "Package: main" >> debian/control
           echo "Architecture: any" >> debian/control
           echo "Depends: \${shlibs:Depends}, \${misc:Depends}" >> debian/control
@@ -47,6 +51,7 @@ jobs:
           export DEBEMAIL="alam.shariful@hotmail.com"
           export DEBFULLNAME="Shariful Alam"
           dch --create --package main --newversion 1.0-1 --distribution unstable --urgency=medium --force-bad-version "Initial release."
+
       - name: Build Debian package
         run: |
           cd gitActionFlow/src
@@ -77,7 +82,7 @@ jobs:
       - name: Install the package in Docker container
         run: |
           apt-get update
-          apt-get install -y ./main_1.0-1_amd64.deb
+          dpkg -i ../*.deb || sudo apt-get install -f
 
       - name: Run installed program
         run: |
