@@ -23,14 +23,14 @@ jobs:
 
       - name: Prepare Debian package structure
         run: |
-          mkdir -p testCode/src/debian
-          cd testCode/src
+          mkdir -p gitActionFlow/src/debian
+          cd gitActionFlow/src
           # Create debian packaging files
           echo "9" > debian/compat
           echo "Source: main" > debian/control
           echo "Section: misc" >> debian/control
           echo "Priority: optional" >> debian/control
-          echo "Maintainer: Your Name <your-email@example.com>" >> debian/control
+          echo "Maintainer: Shariful Alam <alam.shariful@hotmail.com>" >> debian/control
           echo "Build-Depends: debhelper (>= 9)" >> debian/control
           echo "Standards-Version: 4.1.0" >> debian/control
           echo "Package: main" >> debian/control
@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Debian package
         run: |
-          cd testCode/src
+          cd gitActionFlow/src
           dpkg-buildpackage -us -uc
 
       - name: Archive .deb package
