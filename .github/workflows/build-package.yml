@@ -46,7 +46,7 @@ jobs:
           # Set environment variables to avoid interaction issues with dch
           export DEBEMAIL="alam.shariful@hotmail.com"
           export DEBFULLNAME="Shariful Alam"
-          dch --create --package main --newversion 1.0-1 --force-save-on-release
+          dch --create --package main --newversion 1.0-1 --distribution unstable --urgency=medium --force-bad-version "Initial release."
       - name: Build Debian package
         run: |
           cd gitActionFlow/src
