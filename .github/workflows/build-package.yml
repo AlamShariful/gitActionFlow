@@ -28,19 +28,21 @@ jobs:
           # Create debian packaging files
           echo "9" > debian/compat
           
-          # Updated debian/control file
+          # Updated debian/control file with binary package section
           echo "Source: main" > debian/control
           echo "Section: misc" >> debian/control
           echo "Priority: optional" >> debian/control
           echo "Maintainer: Shariful Alam <alam.shariful@hotmail.com>" >> debian/control
           echo "Build-Depends: debhelper (>= 9)" >> debian/control
           echo "Standards-Version: 4.1.0" >> debian/control
+          echo "Homepage: http://example.com" >> debian/control
           
           # Binary package definition
           echo "Package: main" >> debian/control
           echo "Architecture: any" >> debian/control
           echo "Depends: \${shlibs:Depends}, \${misc:Depends}" >> debian/control
           echo "Description: A simple Hello World package" >> debian/control
+          echo " This is a longer description of your package." >> debian/control
 
           echo "#!/usr/bin/make -f" > debian/rules
           echo "%:" >> debian/rules
