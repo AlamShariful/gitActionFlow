@@ -39,8 +39,8 @@ jobs:
           
           # Binary package definition
           echo "Package: main" >> debian/control
-          echo "Architecture: amd64" >> debian/control
           echo "Depends: \${shlibs:Depends}, \${misc:Depends}" >> debian/control
+          echo "Architecture: x86" >> debian/control
           echo "Description: A simple Hello World package" >> debian/control
           echo " This is a longer description of your package." >> debian/control
 
