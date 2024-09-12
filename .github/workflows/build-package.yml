@@ -62,10 +62,25 @@ jobs:
   test-package:
     needs: build-package
     runs-on: ubuntu-latest
+
     container:
       image: ubuntu:latest
 
     steps:
       - name: Checkout code
-        uses: actions
+        uses: actions/checkout@v3
+
+      - name: Download Debian package
+        uses: actions/download-artifact@v3
+        with:
+          name: debian-package
+
+      - name: Install the package in Docker container
+        run: |
+          apt-get update
+          apt-get install -y ./main_1.0-1_amd64.deb
+
+      - name: Run installed program
+        run: |
+          main
 
