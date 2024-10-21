@@ -61,8 +61,7 @@ jobs:
       - name: Install the package in Docker container
         run: |
           apt-get update
-          dpkg -i *.deb || apt-get install -f
-          #dpkg -i ../*.deb || sudo apt-get install -f
+          dpkg -i ../*.deb || sudo apt-get install -f
 
       - name: Run installed program
         run: |
