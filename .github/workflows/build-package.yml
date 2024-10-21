@@ -58,6 +58,21 @@ jobs:
         with:
           name: debian-package
 
+      - name: Print current location
+        run: |
+          echo "Current directory:"
+          pwd  # Prints the current working directory
+
+      - name: Print the name of the package about to install
+        run: |
+          echo "About to install package:"
+          ls -l *.deb  # Prints the name of the .deb file
+
+      - name: Print package location
+        run: |
+          echo "Package location:"
+          find . -name "*.deb" -exec realpath {} \;  # Finds and prints the absolute path of the .deb file
+
       - name: Install the package in Docker container
         run: |
           apt-get update
