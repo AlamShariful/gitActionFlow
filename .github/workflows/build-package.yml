@@ -43,12 +43,12 @@ jobs:
           include-hidden-files: false
      
       - name: Create New Tag
-        id: create_tag
-        uses: actions-ecosystem/action-create-tag@v1
+        id: tag
+        uses: mathieudutour/github-tag-action@v6.0
         with:
-          tag_prefix: "v"  # Version tag prefix, such as "v" for "v1.0", "v1.1", etc.
-          initial_version: "1.0"  # The starting version, only used if no tags exist
-          tag_suffix: ".0"  # Optional suffix (e.g., for hotfixes like "v1.0.1")
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: "v"  # Tag will be v1.0, v1.1, etc.
+
 
       - name: Create Release
         id: create_release
