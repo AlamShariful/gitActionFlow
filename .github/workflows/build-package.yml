@@ -41,15 +41,23 @@ jobs:
           path: '*.deb'
           if-no-files-found: warn
           include-hidden-files: false
-      
+     
+      - name: Create New Tag
+        id: create_tag
+        uses: actions-ecosystem/action-create-tag@v1
+        with:
+          tag_prefix: "v"  # Version tag prefix, such as "v" for "v1.0", "v1.1", etc.
+          initial_version: "1.0"  # The starting version, only used if no tags exist
+          tag_suffix: ".0"  # Optional suffix (e.g., for hotfixes like "v1.0.1")
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0  # Adjust the version number as needed
-          release_name: v1.0
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}  # Use the new tag created automatically
+          release_name: ${{ steps.create_tag.outputs.new_tag }}  # Release name as the tag
           draft: false
           prerelease: false
             #- name: Upload Debian package to Release
