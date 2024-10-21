@@ -1,4 +1,4 @@
-Source: gitActionFlow
+Source: newfilename
 Section: misc
 Priority: optional
 Maintainer: John Doe <john.doe@example.com>
@@ -6,7 +6,7 @@ Build-Depends: debhelper-compat (= 12)
 Standards-Version: 4.1.0
 Homepage: http://example.com
 
-Package: gitActionFlow
+Package: gitactionflowpackage
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: A simple Hello World program
