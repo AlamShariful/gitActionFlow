@@ -1,0 +1,92 @@
+name: Build and Install Debian Package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential devscripts debhelper-compat dh-autoreconf fakeroot
+
+      - name: Prepare Debian package structure
+        run: |
+          mkdir -p gitActionFlow/src/debian
+          cd gitActionFlow/src
+          # Create debian packaging files
+          echo "9" > debian/compat
+          
+          # Updated debian/control file with binary package section
+          echo "Source: main" > debian/control
+          echo "Section: misc" >> debian/control
+          echo "Priority: optional" >> debian/control
+          echo "Maintainer: Shariful Alam <alam.shariful@hotmail.com>" >> debian/control
+          echo "Build-Depends: debhelper-compat (= 12)" >> debian/control
+          echo "Standards-Version: 4.1.0" >> debian/control
+          echo "Homepage: http://example.com" >> debian/control
+          
+          # Binary package definition
+          echo "Package: main" >> debian/control
+          echo "Architecture: any" >> debian/control
+          echo "Depends: \${shlibs:Depends}, \${misc:Depends}" >> debian/control
+          echo "Description: A simple Hello World package" >> debian/control
+          echo " This is a longer description of your package." >> debian/control
+
+          echo "#!/usr/bin/make -f" > debian/rules
+          echo "%:" >> debian/rules
+          echo "	dh \$@" >> debian/rules
+          chmod +x debian/rules
+
+          # Set environment variables to avoid interaction issues with dch
+          export DEBEMAIL="alam.shariful@hotmail.com"
+          export DEBFULLNAME="Shariful Alam"
+          dch --create --package main --newversion 1.0-1 --distribution unstable --urgency=medium --force-bad-version "Initial release."
+
+      - name: Build Debian package
+        run: |
+          cd gitActionFlow/src
+          dpkg-buildpackage -b
+
+      - name: Archive .deb package
+        uses: actions/upload-artifact@v3
+        with:
+          name: debian-package
+          path: ../*.deb
+
+  test-package:
+    needs: build-package
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Debian package
+        uses: actions/download-artifact@v3
+        with:
+          name: debian-package
+
+      - name: Install the package in Docker container
+        run: |
+          apt-get update
+          dpkg -i ../*.deb || sudo apt-get install -f
+
+      - name: Run installed program
+        run: |
+          main
+

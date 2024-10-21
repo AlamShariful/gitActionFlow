@@ -1,0 +1,14 @@
+Source: gitActionFlow
+Section: misc
+Priority: optional
+Maintainer: John Doe <john.doe@example.com>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.1.0
+Homepage: http://example.com
+
+Package: gitActionFlow
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A simple Hello World program
+ A basic "Hello World" program to demonstrate Debian packaging.
+
