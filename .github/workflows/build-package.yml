@@ -25,16 +25,22 @@ jobs:
         run: |
           cd src
           make
-          mkdir -p debian/usr/bin
-          mv main debian/usr/bin/gitActionFlow
+          mkdir -p ../debian/usr/bin
+          mv main ../debian/usr/bin/gitActionFlow
           cd ..
           dpkg-buildpackage -b
+
+      - name: Move .deb file to workspace root
+        run: |
+          mv ../*.deb .   # Move the .deb file to the workspace root
 
       - name: Archive .deb package
         uses: actions/upload-artifact@v3
         with:
           name: debian-package
-          path: ../*.deb
+          path: '*.deb'
+          if-no-files-found: warn
+          include-hidden-files: false
 
   test-package:
     needs: build-package
