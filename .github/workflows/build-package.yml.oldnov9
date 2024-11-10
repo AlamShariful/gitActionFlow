@@ -1,0 +1,120 @@
+name: Build and Install Debian Package
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential devscripts debhelper-compat dh-autoreconf fakeroot
+
+      - name: Build Debian package
+        run: |
+          cd src
+          make
+          mkdir -p ../debian/usr/bin
+          mv main ../debian/usr/bin/gitActionFlow
+          cd ..
+          dpkg-buildpackage -b
+
+      - name: Move .deb file to workspace root
+        run: |
+          mv ../*.deb .   # Move the .deb file to the workspace root
+
+      - name: Archive .deb package
+        uses: actions/upload-artifact@v3
+        with:
+          name: debian-package
+          path: '*.deb'
+          if-no-files-found: warn
+          include-hidden-files: false
+     
+      - name: Create New Tag
+        id: tag
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.PAT_TOKEN }}
+          tag_prefix: "v"  # Tag will be v1.0, v1.1, etc.
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.new_tag }}  # Use the new tag created automatically
+          release_name: ${{ steps.tag.outputs.new_tag }}  # Release name as the tag
+          draft: false
+          prerelease: false
+            #- name: Upload Debian package to Release
+            #uses: actions/upload-release-asset@v1
+            #with:
+            #upload_url: ${{ steps.create_release.outputs.upload_url }}
+            #asset_path: './gitactionflowpackage_1.0-1_amd64.deb'  # Replace with your actual .deb file name
+            #asset_name: 'gitactionflowpackage_1.0-1_amd64.deb'
+            #asset_content_type: 'application/octet-stream'
+      - name: Upload Debian package to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  # Use the PAT_TOKEN secret instead of GITHUB_TOKEN
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: './gitactionflowpackage_1.0-1_amd64.deb'  # Path to your .deb file
+          asset_name: 'gitactionflowpackage_1.0-1_amd64.deb'
+          asset_content_type: 'application/octet-stream'
+
+
+  test-package:
+    needs: build-package
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download Debian package
+        uses: actions/download-artifact@v3
+        with:
+          name: debian-package
+
+      - name: Print current location
+        run: |
+          echo "Current directory:"
+          pwd  # Prints the current working directory
+
+      - name: Print the name of the package about to install
+        run: |
+          echo "About to install package:"
+          ls -l *.deb  # Prints the name of the .deb file
+
+      - name: Print package location
+        run: |
+          echo "Package location:"
+          find . -name "*.deb" -exec realpath {} \;  # Finds and prints the absolute path of the .deb file
+
+      - name: Install the package in Docker container
+        run: |
+          apt-get update
+          dpkg -i *.deb || apt-get install -f
+
+      - name: Run installed program
+        run: |
+          gitactionflowpackage
+
