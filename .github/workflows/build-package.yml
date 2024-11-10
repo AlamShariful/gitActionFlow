@@ -41,7 +41,7 @@ jobs:
         mkdir -p debian/usr/local/bin
 
         # Copy compiled binaries to debian package structure
-        cp build/* debian/usr/local/bin/
+        cp src/* debian/usr/local/bin/
 
         # Create control file
         cat > debian/DEBIAN/control << EOF
